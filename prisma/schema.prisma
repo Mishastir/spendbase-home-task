@@ -1,0 +1,39 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Weather {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lat            Float
+  lon            Float
+  part           WeatherPart
+  timezone       String
+  timezoneOffset Int         @map("timezone_offset")
+
+  // We use data.dt (for current), data[0].dt (for minutely, hourly, daily) and data[0].start (for alerts)
+  // to define whether data is actual for lat-lon-part chain.
+  // If "yes" -- we keep current record
+  // If "no" -- we create new one
+  dt   DateTime
+  data Json     @db.JsonB
+
+  @@unique([lat, lon, part, dt])
+  @@index([lat, lon, part])
+  @@map("weather")
+}
+
+enum WeatherPart {
+  current
+  minutely
+  hourly
+  daily
+  alerts
+
+  @@map("weather_part")
+}

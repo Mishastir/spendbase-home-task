@@ -1,0 +1,14 @@
+# /node_modules/* in the project root is ignored by default
+# build artefacts
+dist/*
+coverage/*
+jest.config.js
+test/*
+index.d.ts
+temp/*
+web
+script/*
+config/*
+worker/*
+docs/*
+tests/*
